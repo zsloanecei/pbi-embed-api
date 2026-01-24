@@ -1,0 +1,26 @@
+# Azure Functions artifacts
+bin
+obj
+csx
+.vs
+edge
+PublishOutput
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+.env
+
+# Azure Functions local settings
+local.settings.json
+
+# Local environment scripts with secrets
+set-env.ps1
+
+# VS Code
+.vscode/
+
+# Legacy/Misc
+*.log
