@@ -20,6 +20,7 @@ CLIENT_ID = os.environ.get('CLIENT_ID')
 CLIENT_SECRET = os.environ.get('CLIENT_SECRET')
 WORKSPACE_ID = os.environ.get('WORKSPACE_ID')
 REPORT_ID = os.environ.get('REPORT_ID')
+EFFECTIVE_IDENTITY = os.environ.get('EFFECTIVE_IDENTITY')
 
 # Check if we have the basics before defining the rest
 if requests:
@@ -73,7 +74,7 @@ def get_report_details(access_token, workspace_id, report_id=None):
 
     return report
 
-def generate_embed_token(access_token, workspace_id, report_id, dataset_id):
+def generate_embed_token(access_token, workspace_id, report_id, dataset_id, identity=None):
     if not requests:
         raise Exception(f"Server Configuration Error: {IMPORT_ERROR}")
 
@@ -89,6 +90,12 @@ def generate_embed_token(access_token, workspace_id, report_id, dataset_id):
         "accessLevel": "View",
         "datasetId": dataset_id
     }
+    
+    if identity:
+        body['identities'] = [{
+            'username': identity,
+            'datasets': [dataset_id]
+        }]
     
     response = requests.post(url, headers=headers, json=body)
     try:
@@ -171,7 +178,7 @@ def getEmbedInfo(req: func.HttpRequest) -> func.HttpResponse:
         report_name = report['name']
         
         # 2. Generate Embed Token
-        embed_token_data = generate_embed_token(token, WORKSPACE_ID, current_report_id, dataset_id)
+        embed_token_data = generate_embed_token(token, WORKSPACE_ID, current_report_id, dataset_id, identity=EFFECTIVE_IDENTITY)
         embed_token = embed_token_data['token']
         # Expiration is in embed_token_data['expiration'] if needed
         
