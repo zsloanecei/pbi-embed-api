@@ -74,6 +74,18 @@ def get_report_details(access_token, workspace_id, report_id=None):
 
     return report
 
+def get_dataset_details(access_token, workspace_id, dataset_id):
+    if not requests:
+        raise Exception(f"Server Configuration Error: {IMPORT_ERROR}")
+
+    headers = {'Authorization': f'Bearer {access_token}'}
+    # Power BI API to get dataset details
+    url = f"{POWERBI_API_URL}/groups/{workspace_id}/datasets/{dataset_id}"
+    
+    response = requests.get(url, headers=headers)
+    response.raise_for_status()
+    return response.json()
+
 def generate_embed_token(access_token, workspace_id, report_id, dataset_id, identity=None):
     if not requests:
         raise Exception(f"Server Configuration Error: {IMPORT_ERROR}")
@@ -177,9 +189,16 @@ def getEmbedInfo(req: func.HttpRequest) -> func.HttpResponse:
         embed_url = report['embedUrl']
         dataset_id = report['datasetId']
         report_name = report['name']
+
+        # 2. Check if the dataset requires Effective Identity (RLS)
+        dataset = get_dataset_details(token, WORKSPACE_ID, dataset_id)
+        is_rls_enabled = dataset.get('isEffectiveIdentityRequired', False)
+
+        # Only pass identity if RLS is enabled and identity is configured
+        identity_to_use = EFFECTIVE_IDENTITY if is_rls_enabled else None
         
-        # 2. Generate Embed Token
-        embed_token_data = generate_embed_token(token, WORKSPACE_ID, current_report_id, dataset_id, identity=EFFECTIVE_IDENTITY)
+        # 3. Generate Embed Token
+        embed_token_data = generate_embed_token(token, WORKSPACE_ID, current_report_id, dataset_id, identity=identity_to_use)
         embed_token = embed_token_data['token']
         # Expiration is in embed_token_data['expiration'] if needed
         
