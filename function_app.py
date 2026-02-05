@@ -94,7 +94,8 @@ def generate_embed_token(access_token, workspace_id, report_id, dataset_id, iden
     if identity:
         body['identities'] = [{
             'username': identity,
-            'datasets': [dataset_id]
+            'datasets': [dataset_id],
+            'roles': ["AllSitesRole"]
         }]
     
     response = requests.post(url, headers=headers, json=body)
