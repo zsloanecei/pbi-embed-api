@@ -95,19 +95,23 @@ def generate_embed_token(access_token, workspace_id, report_id, dataset_id, iden
         'Content-Type': 'application/json'
     }
     
-    # "App Owns Data" - GenerateToken for the report
-    url = f"{POWERBI_API_URL}/groups/{workspace_id}/reports/{report_id}/GenerateToken"
+    # "App Owns Data" - V2 GenerateToken for multiple resources (required for DirectLake)
+    url = f"{POWERBI_API_URL}/GenerateToken"
     
     body = {
-        "accessLevel": "View",
-        "datasetId": dataset_id
+        "datasets": [
+            { "id": dataset_id }
+        ],
+        "reports": [
+            { "id": report_id }
+        ]
     }
     
     if identity:
         body['identities'] = [{
             'username': identity,
             'datasets': [dataset_id],
-            'roles': ["AllSitesRole"]
+            'roles': ["AllSitesRole"] # Ensure this role exists/is correct for your model
         }]
     
     response = requests.post(url, headers=headers, json=body)
