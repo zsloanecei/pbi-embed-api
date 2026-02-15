@@ -104,6 +104,9 @@ def generate_embed_token(access_token, workspace_id, report_id, dataset_id, iden
         ],
         "reports": [
             { "id": report_id }
+        ],
+        "targetWorkspaces": [
+            { "id": workspace_id }
         ]
     }
     
