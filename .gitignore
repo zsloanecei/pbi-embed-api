@@ -24,3 +24,6 @@ set-env.ps1
 
 # Legacy/Misc
 *.log
+
+# exports for transferring to ASWB
+export_for_aswb/
