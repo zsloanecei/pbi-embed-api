@@ -25,5 +25,9 @@ set-env.ps1
 # Legacy/Misc
 *.log
 
+local_creds.txt
+
+
 # exports for transferring to ASWB
 export_for_aswb/
+.python_packages
